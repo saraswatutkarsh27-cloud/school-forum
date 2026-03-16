@@ -18,7 +18,7 @@ export class PostService {
       throw new NotFoundException('Thread not found');
     }
     return this.postModel
-      .find({ threadId: thread._id })
+      .find({ threadId })
       .sort({ createdAt: 1 })
       .exec();
   }
@@ -33,7 +33,7 @@ export class PostService {
     }
 
     const post = new this.postModel({
-      threadId: thread._id,
+      threadId: dto.threadId,
       authorId,
       content: dto.content,
     });
@@ -41,4 +41,3 @@ export class PostService {
     return post.save();
   }
 }
-

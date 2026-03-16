@@ -11,7 +11,8 @@ export class Category extends Document {
 
   @Prop()
   description?: string;
+
+  createdAt!: Date;
 }
 
 export const CategorySchema = SchemaFactory.createForClass(Category);
-

@@ -14,7 +14,8 @@ export class User extends Document {
 
   @Prop()
   photoURL?: string;
+
+  createdAt!: Date;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
-

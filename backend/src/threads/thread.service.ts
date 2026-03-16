@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import { Thread } from './thread.schema';
 import { CreateThreadDto } from './dto/create-thread.dto';
 import { Category } from '../categories/category.schema';
@@ -20,7 +20,7 @@ export class ThreadService {
     if (!category) {
       throw new NotFoundException('Category not found');
     }
-    return (category._id as Types.ObjectId).toHexString();
+    return (category._id as any).toHexString();
   }
 
   async listThreadsByCategorySlug(slug: string): Promise<Thread[]> {
@@ -29,7 +29,7 @@ export class ThreadService {
       throw new NotFoundException('Category not found');
     }
     return this.threadModel
-      .find({ categoryId: category._id })
+      .find({ categoryId: (category._id as any).toHexString() })
       .sort({ createdAt: -1 })
       .exec();
   }
@@ -46,20 +46,15 @@ export class ThreadService {
     dto: CreateThreadDto,
     authorId: string,
   ): Promise<{ thread: Thread; firstPost: Post }> {
-    const category = await this.categoryModel.findById(dto.categoryId).exec();
-    if (!category) {
-      throw new NotFoundException('Category not found');
-    }
-
     const thread = new this.threadModel({
       title: dto.title,
-      categoryId: category._id,
+      categoryId: dto.categoryId,
       authorId,
     });
     await thread.save();
 
     const firstPost = new this.postModel({
-      threadId: thread._id,
+      threadId: (thread._id as any).toHexString(),
       authorId,
       content: dto.initialPostContent,
     });
@@ -68,4 +63,3 @@ export class ThreadService {
     return { thread, firstPost };
   }
 }
-
