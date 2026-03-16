@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import { Post } from './post.schema';
 import { CreatePostDto } from './dto/create-post.dto';
 import { Thread } from '../threads/thread.schema';
@@ -25,7 +25,7 @@ export class PostService {
 
   async createPost(
     dto: CreatePostDto,
-    authorId: Types.ObjectId,
+    authorId: string,
   ): Promise<Post> {
     const thread = await this.threadModel.findById(dto.threadId).exec();
     if (!thread) {

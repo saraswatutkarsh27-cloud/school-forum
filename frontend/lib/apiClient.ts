@@ -1,3 +1,5 @@
+"use client";
+
 import { useAuth } from '../components/AuthProvider';
 
 const API_BASE_URL =

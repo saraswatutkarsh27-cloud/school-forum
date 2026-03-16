@@ -15,6 +15,14 @@ export class ThreadService {
     @InjectModel(Post.name) private readonly postModel: Model<Post>,
   ) {}
 
+  async resolveCategoryIdBySlug(slug: string): Promise<string> {
+    const category = await this.categoryModel.findOne({ slug }).exec();
+    if (!category) {
+      throw new NotFoundException('Category not found');
+    }
+    return (category._id as Types.ObjectId).toHexString();
+  }
+
   async listThreadsByCategorySlug(slug: string): Promise<Thread[]> {
     const category = await this.categoryModel.findOne({ slug }).exec();
     if (!category) {
@@ -36,7 +44,7 @@ export class ThreadService {
 
   async createThread(
     dto: CreateThreadDto,
-    authorId: Types.ObjectId,
+    authorId: string,
   ): Promise<{ thread: Thread; firstPost: Post }> {
     const category = await this.categoryModel.findById(dto.categoryId).exec();
     if (!category) {

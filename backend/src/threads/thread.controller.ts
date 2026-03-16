@@ -11,7 +11,6 @@ import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { DecodedIdToken } from 'firebase-admin/auth';
 import { CreateThreadDto } from './dto/create-thread.dto';
-import { Types } from 'mongoose';
 
 @Controller()
 export class ThreadController {
@@ -50,17 +49,18 @@ export class ThreadController {
     @Body() body: { title: string; initialPostContent: string },
     @CurrentUser() token: DecodedIdToken,
   ) {
+    // Resolve real categoryId from slug first
+    const categoryId = await this.threadService.resolveCategoryIdBySlug(slug);
+
     const dto: CreateThreadDto = {
       title: body.title,
       initialPostContent: body.initialPostContent,
-      // categoryId will be resolved inside service using slug, so we set placeholder
-      categoryId: new Types.ObjectId().toHexString(),
+      categoryId,
     };
 
-    // Resolve real categoryId inside service using slug
-    const authorId = new Types.ObjectId(token.uid.substring(0, 24).padEnd(24, '0'));
+    const authorId = token.uid; // store Firebase UID as string
     const { thread, firstPost } = await this.threadService.createThread(
-      { ...dto, categoryId: dto.categoryId },
+      dto,
       authorId,
     );
 

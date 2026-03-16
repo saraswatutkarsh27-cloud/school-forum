@@ -11,7 +11,6 @@ import { FirebaseAuthGuard } from '../auth/firebase-auth.guard';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { DecodedIdToken } from 'firebase-admin/auth';
 import { CreatePostDto } from './dto/create-post.dto';
-import { Types } from 'mongoose';
 
 @Controller('threads/:threadId/posts')
 export class PostController {
@@ -42,7 +41,7 @@ export class PostController {
       content: body.content,
     };
 
-    const authorId = new Types.ObjectId(token.uid.substring(0, 24).padEnd(24, '0'));
+    const authorId = token.uid;
     const post = await this.postService.createPost(dto, authorId);
 
     return {
